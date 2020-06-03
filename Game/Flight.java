@@ -1,13 +1,8 @@
 package Game;
-import java.util.ArrayList;
 
-
-
-public class Flight
+public class Flight extends FlyingObjectBase
 {
-    private int score;
-    private int health;
-    private int level;    
+      
 
 
    

@@ -1,6 +1,6 @@
 package Game;
 
-public class Enemy
+public class Enemy extends FlyingObjectBase
 {
     
 }

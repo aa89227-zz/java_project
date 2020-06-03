@@ -1,6 +1,6 @@
 package Game;
 
-public class Bullet
+public class Bullet extends FlyingObjectBase
 {
 
 }
