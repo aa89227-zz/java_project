@@ -35,23 +35,34 @@ public abstract class FlyingObjectBase
         my = m_y;
     }
 
-    void setHealth(int Health){
+    public void setHealth(int Health){
         health = Health;
     }
 
-    void addHealth(int off){
+    public void addHealth(int off){
         health += off;
     }
 
-    void moveUnit(int unit){
+    public void moveUnit(int unit){
         px += unit * mx;
         py += unit * my;
     }
-
-    void setPosition(int x, int y){
+    
+    public void setPosition(int x, int y){
         px = x;
         py = y;
     }
 
-    
+    public int getHealth() {
+        return health;
+    }
+
+    public int getPx() {
+        return px;
+    }
+
+    public int getPy() {
+        return py;
+    }
+
 }
