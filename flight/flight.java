@@ -51,5 +51,5 @@ public class flight
             return false;
         }
     }
-    
+
 }

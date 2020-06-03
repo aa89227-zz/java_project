@@ -1,5 +1,6 @@
 package flight;
-public class bullet
+
+public class Bullet extends BasicShape
 {
 
 }

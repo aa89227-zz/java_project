@@ -1,5 +1,6 @@
 package flight;
 
-public class enemy {
+public class Enemy extends BasicShape
+{
     
 }
