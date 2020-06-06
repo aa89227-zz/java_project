@@ -2,7 +2,6 @@ package Game;
 import java.util.ArrayList;
 public class Flight extends FlyingObjectBase
 {
-    
 
     private int FlightType = 0;
     private final int MAXTYPE = 5;

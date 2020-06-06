@@ -149,7 +149,11 @@ public class Game {
         game_state = false;
 
     }
-
+    /**
+     * <code>thread</code>，滑鼠移動時會重繪戰機
+     * <p>
+     * 當 <code>game_state == true</code> ，也就是遊戲開始時會執行
+     */
     private static class MoveFlight extends Thread {
         
         MoveFlight()
@@ -167,7 +171,15 @@ public class Game {
         }
 
     }
-
+    /**
+     * <code>thread</code>，計算路程
+     * <p>
+     * 當 <code>game_state == true</code> ，也就是遊戲開始時會執行
+     * <p>
+     * <code>distance</code> 及 <code>score</code> 都會往上加
+     * <p>
+     * 使用critical section
+     */
     private static class Timmer extends Thread{
         Timmer(){
 
@@ -187,7 +199,17 @@ public class Game {
             }
         } 
     }
-    
+    /**
+     * <code>thread</code>，計算是否要清除
+     * <p>
+     * 當 <code>game_state == true</code> ，也就是遊戲開始時會執行
+     * <p> 
+     * 四種情況:<p>
+     * (1)超出邊界，直接清除。<p>
+     * (2)敵人血量為小餘0，清除，並加分。<p>
+     * (3)戰機血量小餘0，清除，結束遊戲。<p>
+     * (4)子彈，不論是何方的子彈，血量小餘0，清除，不加分<p>
+     */
     private static class DealDamage extends Thread{
         DealDamage(){
 

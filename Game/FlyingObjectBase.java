@@ -25,7 +25,10 @@ public abstract class FlyingObjectBase
         mx = 0;
         my = 0;
     }
-    
+    /**
+     * 
+     * @param height
+     */
     public void setHeight(int height) {
         this.height = height;
     }
@@ -41,16 +44,25 @@ public abstract class FlyingObjectBase
     public void setHealth(int Health){
         health = Health;
     }
-
+    
     public void addHealth(int off){
         health += off;
     }
 
+    /**
+     * 移動 一個單位 * 向量
+     * @param   unit 單位
+    */
     public void moveUnit(int unit){
         px += unit * mx;
         py += unit * my;
     }
     
+    /**
+     * 設定 Object 的 position，(x,y)
+     * @param x
+     * @param y
+     */
     public void setPosition(double x, double y){
         px = x;
         py = y;
