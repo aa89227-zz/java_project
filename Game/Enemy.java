@@ -2,6 +2,7 @@ package Game;
 
 public class Enemy extends FlyingObjectBase
 {
+
     int Type = 0;
     //TODO:
     //制定一個BOSS與小怪的範圍

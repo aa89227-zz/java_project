@@ -1,20 +1,19 @@
 package Game;
 import java.util.ArrayList;
-
 public class Flight extends FlyingObjectBase
 {
-    int FlightType = 0;
-    final int MAXTYPE = 5;
-    final ArrayList<Bullet> bullet0 = new ArrayList<Bullet>();
-    final ArrayList<Bullet> bullet1 = new ArrayList<Bullet>();
-    final ArrayList<Bullet> bullet2 = new ArrayList<Bullet>();
-    final ArrayList<Bullet> bullet3 = new ArrayList<Bullet>();
-    final ArrayList<Bullet> bullet4 = new ArrayList<Bullet>();
+    
+
+    private int FlightType = 0;
+    private final int MAXTYPE = 5;
+    private final ArrayList<Bullet> bullet0 = new ArrayList<Bullet>();
+    private final ArrayList<Bullet> bullet1 = new ArrayList<Bullet>();
+    private final ArrayList<Bullet> bullet2 = new ArrayList<Bullet>();
+    private final ArrayList<Bullet> bullet3 = new ArrayList<Bullet>();
+    private final ArrayList<Bullet> bullet4 = new ArrayList<Bullet>();
 
     ArrayList<Bullet> bullet; //從bullet_n 複製，用於shoot
-    Flight(){
-        FlightType = 0;
-    }
+    
 
     public void NextType(){
         ++FlightType;
@@ -30,6 +29,7 @@ public class Flight extends FlyingObjectBase
     }
     public void draw(){
         //TODO:重繪戰機於 (px, py)
+
     }
     public void shoot(){
         //TODO:召喚子彈
