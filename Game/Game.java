@@ -1,5 +1,6 @@
 package Game;
-
+//TODO:
+//為class.draw()定位frame
 import javax.swing.*;
 
 import java.lang.Thread;
@@ -8,19 +9,17 @@ import java.awt.event.*;
 import java.awt.*;
 public class Game {
     private static JFrame frame = new JFrame("雷霆戰機");
-
-    private static JButton bt_start = new JButton("開始遊戲");
-    private static JButton bt_option = new JButton("選項");
-    private static JButton bt_exit = new JButton("結束遊戲");
-
+    private static JPanel pn_mainMenu = new JPanel();
+    
     private static boolean game_state = false;
     public static void main(String[] args)
     {
-        MoveFlight mf = new MoveFlight();
         frame.setSize(500, 800);
-        frame.setLayout(new GridLayout(1, 3));
-        frame.addMouseListener(new MoveFlight());
-
+        pn_mainMenu.setLayout(new BorderLayout());
+        
+        JButton bt_start = new JButton("開始遊戲");
+        JButton bt_option = new JButton("選項");
+        JButton bt_exit = new JButton("結束遊戲");
         bt_start.addActionListener(
             new ActionListener(){
                 public void actionPerformed(ActionEvent e){start();}
@@ -39,10 +38,11 @@ public class Game {
             
         bt_start.setSize(200, 100);
         bt_option.setSize(200, 100);
-
-        frame.add(bt_start);
-        frame.add(bt_option);
-        frame.add(bt_exit);
+        bt_exit.setSize(200, 100);
+        pn_mainMenu.add(bt_start, BorderLayout.CENTER);
+        pn_mainMenu.add(bt_option, BorderLayout.CENTER);
+        pn_mainMenu.add(bt_exit, BorderLayout.CENTER);
+        frame.add(pn_mainMenu);
         frame.setVisible(true);
     }
 
@@ -55,6 +55,7 @@ public class Game {
         //      * 跑計時器(計算路程)
         //      * 讀取計時器，到一定的路程會召喚 enemy
         //      * 計算是否戰機有受到傷害
+        //      * MoveFlight
         return;
     }
 
@@ -74,16 +75,16 @@ public class Game {
         // - 停止計時器
     }
 
-    private static class MoveFlight extends MouseAdapter {
+    private static class MoveFlight extends Thread {
         MoveFlight()
         {
             
         }
         
         @Override
-        public void mouseMoved(MouseEvent e) {
-            if (game_state = false) return;
-            //TODO:移動滑鼠時重繪戰機
+        public void run() {
+            //TODO
+            //偵測滑鼠移動，並重繪戰機
         }
     }
 }

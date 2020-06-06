@@ -3,7 +3,7 @@ package Game;
 public abstract class FlyingObjectBase 
 {
     private int health = 0; // health of object
-
+    private int attack = 1;
     private int px = 0;    // position x
     private int py = 0;    // position y
 
@@ -53,6 +53,10 @@ public abstract class FlyingObjectBase
         py = y;
     }
 
+    public void setAttack(int num){
+        attack = num;
+    }
+
     public int getHealth() {
         return health;
     }
@@ -63,6 +67,10 @@ public abstract class FlyingObjectBase
 
     public int getPy() {
         return py;
+    }
+
+    public int getAttack() {
+        return attack;
     }
 
 }
