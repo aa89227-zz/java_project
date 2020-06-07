@@ -13,7 +13,7 @@ public abstract class FlyingObjectBase
     private double mx = 0; // vector x
     private double my = 0; // vector y
 
-    private void
+    private int ObjectType = 0;
 
     FlyingObjectBase()
     {
@@ -44,7 +44,7 @@ public abstract class FlyingObjectBase
     public void setHealth(int Health){
         health = Health;
     }
-    
+
     public void addHealth(int off){
         health += off;
     }
@@ -68,24 +68,40 @@ public abstract class FlyingObjectBase
         py = y;
     }
 
-    public void setAttack(int num){
+    final public void setAttack(int num){
         attack = num;
     }
 
-    public int getHealth() {
+    final public void setVector(double px, double py) {
+        this.px = px;
+        this.py = py;
+    }
+
+    final public void setObjectType(int objectType) {
+        ObjectType = objectType;
+    }
+
+    final public int getHealth() {
         return health;
     }
 
-    public double getPx() {
+    final public double getPx() {
         return px;
     }
 
-    public double getPy() {
+    final public double getPy() {
         return py;
     }
 
-    public int getAttack() {
+    final public int getAttack() {
         return attack;
     }
 
+    /**
+     * 
+     * @return <code>ObjectType</code>
+     */
+    final public int getObjectType() {
+        return ObjectType;
+    }
 }

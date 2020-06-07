@@ -15,7 +15,7 @@ import java.util.concurrent.Semaphore;
 
 public class Game {
     private static JFrame frame = new JFrame("雷霆戰機");
-    private static JLayeredPane pn_mainMenu = new JLayeredPane();
+    private static JPanel pn_mainMenu = new JPanel();
     private static MoveFlight moveFlight = new MoveFlight();
     private static Flight flight = new Flight();
     private static ArrayList<FlyingObjectBase> listOfObj = new ArrayList<FlyingObjectBase>();
@@ -91,17 +91,18 @@ public class Game {
                 public void actionPerformed(ActionEvent e){System.exit(0);}
                 }
             );
-        
+           
         pn_mainMenu.add(lb);
         pn_mainMenu.add(bgLabel);
-        pn_mainMenu.add(bt_start);
-        pn_mainMenu.add(bt_option);
-        pn_mainMenu.add(bt_exit);
-        pn_mainMenu.setLayer(lb, 3);
-        pn_mainMenu.setLayer(bgLabel, 2);
-        pn_mainMenu.setLayer(bt_start, 1);
-        pn_mainMenu.setLayer(bt_option, 1);
-        pn_mainMenu.setLayer(bt_exit, 1);
+        pn_mainMenu.add(bt_start, BorderLayout.CENTER);
+        pn_mainMenu.add(bt_option, BorderLayout.CENTER);
+        pn_mainMenu.add(bt_exit, BorderLayout.CENTER);
+
+        //pn_mainMenu.setLayer(lb, 3);
+        //pn_mainMenu.setLayer(bgLabel, 2);
+        //pn_mainMenu.setLayer(bt_start, 1);
+        //pn_mainMenu.setLayer(bt_option, 1);
+        //pn_mainMenu.setLayer(bt_exit, 1);
         frame.add(pn_mainMenu);
         frame.repaint();
         frame.addWindowListener(new WindowAdapter() 
@@ -221,9 +222,7 @@ public class Game {
                 /*
                 try{
                     for (FlyingObjectBase flyingObject : listOfObj) {
-                        //TODO 
-                        //如果生命值低於0 必須刪掉，若為敵人則加分
-                        //若obj超過邊界，刪除
+                        
                     }
                 }
                 catch (InterruptedException e){
