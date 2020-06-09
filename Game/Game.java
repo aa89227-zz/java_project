@@ -12,16 +12,17 @@ import javax.sound.sampled.AudioInputStream;//音樂
 import java.io.*;
 import javax.sound.sampled.*;//音樂
 import java.util.ArrayList;
+import java.util.Random;
+import java.util.List;
 import java.awt.Graphics;
 
 public class Game {
     //private static JFrame frame = new JFrame("雷霆戰機");
     private static Panelextend frm = new Panelextend();
-    private static JPanel drawPane = new JPanel();//draw使用
-    private static Graphics g = drawPane.getGraphics();//draw使用
-    private static MoveFlight moveFlight = new MoveFlight(); // thread of detect mouse position
+    //private static JPanel drawPane = new JPanel();//draw使用
+    //private static Graphics g = drawPane.getGraphics();//draw使用
 
-    private static Flight flight = new Flight();
+    public static Flight flight = new Flight();
     private static ArrayList<Bullet> flightBullets = new ArrayList<Bullet>(); 
     private static ArrayList<Enemy> enemies = new ArrayList<Enemy>(); 
     private static ArrayList<Bullet> enemyBullets = new ArrayList<Bullet>(); 
@@ -37,6 +38,49 @@ public class Game {
     private static int speed = 1; //遊戲速度
     final private static int gW = 500; //screen width
     final private static int gH = 800; //screen height
+    private static Toolkit toolkit = Toolkit.getDefaultToolkit();
+    private static Image background = toolkit.getImage("background.jpg");
+    public static int round = 0;
+    private static JPanel drawPane = new JPanel(){
+        @Override
+        public void paintComponent(Graphics g) 
+        {
+            super.paintComponent(g);
+            //畫背景
+            g.drawImage(background, 0, 0,gW, gH,null);
+            //血量
+            g.setColor(Color.RED); 
+            g.setFont(new Font(String.valueOf(flight.getHealth()),Font.BOLD, 30));
+            g.drawString("血量:"+String.valueOf(flight.getHealth()), 30, 30);
+            //分數
+            g.setFont(new Font(String.valueOf(score), Font.BOLD, 30));
+            g.drawString("分數:"+String.valueOf(score), gW - 180, 30);
+            
+        
+            //敵人戰機
+            for (FlyingObjectBase flyingObjectBase : enemies) {
+                g.drawImage(flyingObjectBase.getImg(),(int)(flyingObjectBase.getPx() - flyingObjectBase.getWidth()/2),
+                (int)(flyingObjectBase.getPy() - flyingObjectBase.getHeight()/2),flyingObjectBase.getWidth(),flyingObjectBase.getHeight(),null);}
+
+            //玩家子彈
+            for (FlyingObjectBase flyingObjectBase : flightBullets) {
+                g.drawImage(flyingObjectBase.getImg(),(int)(flyingObjectBase.getPx() - flyingObjectBase.getWidth()/2),
+                (int)(flyingObjectBase.getPy() - flyingObjectBase.getHeight()/2),flyingObjectBase.getWidth(),flyingObjectBase.getHeight(),null);}
+
+
+            //玩家戰機
+            g.drawImage(flight.getImg(),(int)(flight.getPx() - flight.getWidth()/2),
+            (int)(flight.getPy() - flight.getHeight()/2),flight.getWidth(),flight.getHeight(),null);
+
+            //敵人子彈
+            for (FlyingObjectBase flyingObjectBase : enemyBullets) {
+                g.drawImage(flyingObjectBase.getImg(),(int)(flyingObjectBase.getPx() - flyingObjectBase.getWidth()/2),
+                (int)(flyingObjectBase.getPy() - flyingObjectBase.getHeight()/2),
+                10,30,null);}
+            
+        }        
+    };
+
     static void music(){     	
         try{
              File musicPath = new File("bgm.wav");
@@ -63,12 +107,13 @@ public class Game {
     public static void main(String[] args)
     {
         frm.setVisible(true);
-
+        Enemy.setInit();
         //frame.setSize(500, 800);
         drawPane.setPreferredSize(new Dimension(gW, gH));//設定panel大小
 
         Panelextend.container.add(drawPane, "drawpane");
-
+        flight.setWidth(80);
+        flight.setHeight(80);
         /**
          * timer
          */
@@ -82,12 +127,27 @@ public class Game {
                     ++score;
                     flight.setPosition(px, py);
                     flight.resetBullet();
-                    flightBullets.addAll(flight.getBullet());
                     for (Enemy enemy : enemies) {
-                        enemyBullets.addAll(enemy.getBullet());
+                        enemy.resetBullet();
                     }
+                    if ((++round) % 10 == 0)
+                        flightBullets.addAll(flight.getBullet());
+                    
+                    if ((new Random().nextInt(10)) == 0){
+                        for (Enemy enemy : enemies) {
+                            if ((new Random().nextInt(3)) == 0){
+                                enemyBullets.addAll(enemy.getBullet());
+                            }
+                        }
+                    }
+                    if (score > 500 * speed) speed += 1;
                     //TODO:
                     //里程數到，釋放enemy
+                    double rx = new Random().nextDouble() * gW;
+                    int rt = new Random().nextInt(6);
+                    if ((new Random().nextInt(20)) == 0){
+                        enemies.add(new Enemy(rx, 9, rt));
+                    }
                     moveUnit();
                     draw();
                     if (flight.getHealth() < 0)
@@ -98,15 +158,25 @@ public class Game {
         //frame.setVisible(true);
         //frame.setResizable(false);
         music();
-        
-        moveFlight.start();
+        drawPane.addMouseMotionListener(new MouseMotionListener(){
+            public void mouseDragged(MouseEvent e){}
+            public void mouseMoved(MouseEvent e){
+                px = e.getX();
+                py = e.getY();
+            }
+        });
     }
 
     public static void start()
     {
         score = 0;
         distance = 0;
+        flight.setHealth(300);
+        flightBullets.clear();
+        enemyBullets.clear();
+        enemies.clear();
         game_state = true;
+        speed = 1;
         timer.start();
         
         return;
@@ -123,6 +193,9 @@ public class Game {
         // - 停止計時器
         game_state = false;
         timer.stop();
+        Over.write(score);
+        Panelextend.card.show(Panelextend.container, "Over");
+       
     }
 
     /** 
@@ -136,24 +209,8 @@ public class Game {
         //draw on drawpane
         //參數 drawImage(圖片,x座標,y座標,寬,高,null)
 
-        //玩家戰機 
-        g.drawImage(flight.getImg(),(int)flight.getPx(),(int)flight.getPy(),20,35,null);
-        
-        //敵人戰機
-        for (FlyingObjectBase flyingObjectBase : enemies) {
-            g.drawImage(flyingObjectBase.getImg(),(int)flyingObjectBase.getPx(),
-                        (int)flyingObjectBase.getPy(),20,35,null);}
-
-        //玩家子彈
-        for (FlyingObjectBase flyingObjectBase : flightBullets) {
-            g.drawImage(flyingObjectBase.getImg(),(int)flyingObjectBase.getPx(),
-                        (int)flyingObjectBase.getPy(),10,30,null);}
-
-        //敵人子彈
-        for (FlyingObjectBase flyingObjectBase : enemyBullets) {
-            g.drawImage(flyingObjectBase.getImg(),(int)flyingObjectBase.getPx(),
-                        (int)flyingObjectBase.getPy(),10,30,null);}
-        //寫完但不確定
+        //update
+        drawPane.repaint();
     }
     
     /**
@@ -172,22 +229,7 @@ public class Game {
     /**
      * 得到滑鼠座標
      */
-    private static class MoveFlight extends Thread {
-        
-        MoveFlight()
-        {
-            
-        }
-
-        @Override
-        public void run() {
-            if (game_state){
-                point = drawPane.getLocation();
-                px = (int)point.getX();
-                py = (int)point.getY();
-            }
-        }
-    }
+    
     
     /**
      * 把碰撞到的扣掉生命值
@@ -195,31 +237,36 @@ public class Game {
     private static void checkDamage(){
         for (FlyingObjectBase enemy : enemies) {
             for (FlyingObjectBase bullet : flightBullets) {
+                
                 if (bullet.getPx() < enemy.getPx() - enemy.getWidth()/2) continue;
                 else if (bullet.getPx() > enemy.getPx() + enemy.getWidth()/2) continue;
                 else if (bullet.getPy() < enemy.getPy() - enemy.getHeight()/2) continue;
                 else if (bullet.getPy() > enemy.getPy() + enemy.getHeight()/2) continue;
                 bullet.addHealth(-(enemy.getAttack()));
                 enemy.addHealth(-(bullet.getAttack()));
+                
             }
+            boolean isIn = false;
             if ((enemy.getPx() - enemy.getWidth()/2 > flight.getPx() - flight.getWidth()/2 
                 && enemy.getPx() - enemy.getWidth()/2 < flight.getPx() + flight.getWidth()/2
-                && enemy.getPy() - enemy.getHeight()/2 > flight.getPx() - flight.getWidth()/2
-                && enemy.getPy() - enemy.getHeight()/2 < flight.getPx() + flight.getWidth()/2)) continue;
+                && enemy.getPy() - enemy.getHeight()/2 > flight.getPy() - flight.getHeight()/2
+                && enemy.getPy() - enemy.getHeight()/2 < flight.getPy() + flight.getHeight()/2)) isIn = true;
             else if ((enemy.getPx() + enemy.getWidth()/2 > flight.getPx() - flight.getWidth()/2 
                 && enemy.getPx() + enemy.getWidth()/2 < flight.getPx() + flight.getWidth()/2
-                && enemy.getPy() - enemy.getHeight()/2 > flight.getPx() - flight.getWidth()/2
-                && enemy.getPy() - enemy.getHeight()/2 < flight.getPx() + flight.getWidth()/2)) continue;
+                && enemy.getPy() - enemy.getHeight()/2 > flight.getPy() - flight.getHeight()/2
+                && enemy.getPy() - enemy.getHeight()/2 < flight.getPy() + flight.getHeight()/2)) isIn = true;
             else if ((enemy.getPx() + enemy.getWidth()/2 > flight.getPx() - flight.getWidth()/2 
                 && enemy.getPx() + enemy.getWidth()/2 < flight.getPx() + flight.getWidth()/2
-                && enemy.getPy() + enemy.getHeight()/2 > flight.getPx() - flight.getWidth()/2
-                && enemy.getPy() + enemy.getHeight()/2 < flight.getPx() + flight.getWidth()/2)) continue;
+                && enemy.getPy() + enemy.getHeight()/2 > flight.getPy() - flight.getHeight()/2
+                && enemy.getPy() + enemy.getHeight()/2 < flight.getPy() + flight.getHeight()/2)) isIn = true;
             else if ((enemy.getPx() - enemy.getWidth()/2 > flight.getPx() - flight.getWidth()/2 
                 && enemy.getPx() - enemy.getWidth()/2 < flight.getPx() + flight.getWidth()/2
-                && enemy.getPy() + enemy.getHeight()/2 > flight.getPx() - flight.getWidth()/2
-                && enemy.getPy() + enemy.getHeight()/2 < flight.getPx() + flight.getWidth()/2)) continue;
-            enemy.addHealth(-(flight.getAttack()));
-            flight.addHealth(-(enemy.getAttack()));
+                && enemy.getPy() + enemy.getHeight()/2 > flight.getPy() - flight.getHeight()/2
+                && enemy.getPy() + enemy.getHeight()/2 < flight.getPy() + flight.getHeight()/2)) isIn = true;
+            if (isIn){
+                enemy.addHealth(-(flight.getAttack()));
+                flight.addHealth(-(enemy.getAttack()));
+            }
         }
         for (FlyingObjectBase bullet : enemyBullets) {
             if (bullet.getPx() < flight.getPx() - flight.getWidth()/2) continue;
@@ -237,9 +284,9 @@ public class Game {
     private static void removeLowerHealth(){
         for (int i = 0; i < enemies.size(); i++) {
             if (enemies.get(i).getHealth() < 0){
+                score += enemies.get(i).getPoint();
                 enemies.remove(i);
                 --i;
-                score += enemies.get(i).getPoint();
             }
         }
         for (int i = 0; i < flightBullets.size(); i++) {
@@ -278,13 +325,13 @@ public class Game {
 
     private static void moveUnit(){
         for (FlyingObjectBase enemy : enemies) {
-            enemy.moveUnit(1);
+            enemy.moveUnit(speed);
         }
         for (FlyingObjectBase bullet : enemyBullets) {
-            bullet.moveUnit(1);
+            bullet.moveUnit(speed);
         }
         for (FlyingObjectBase bullet : flightBullets) {
-            bullet.moveUnit(1);
+            bullet.moveUnit(speed);
         }
     }
 }

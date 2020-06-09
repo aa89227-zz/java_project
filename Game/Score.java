@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.FileReader;
 
 public class Score extends JPanel {
-    private JTextArea textArea = new JTextArea();
+    private static JTextArea textArea = new JTextArea();
     public Score(){
         setLayout(null);
 		ImageIcon background = new ImageIcon("board.png");
@@ -61,7 +61,7 @@ public class Score extends JPanel {
 		showscore();
 	}
 	
-    void showscore(){
+    static void showscore(){
         try
 		{
 			// read file content from file

@@ -1,6 +1,6 @@
 package Game;
 import java.awt.*;
-public abstract class FlyingObjectBase 
+public abstract class FlyingObjectBase implements Cloneable
 {
     private int health = 0; // health of object
     private int attack = 1;
@@ -77,11 +77,6 @@ public abstract class FlyingObjectBase
         attack = num;
     }
 
-    final public void setVector(double px, double py) {
-        this.px = px;
-        this.py = py;
-    }
-
     final public void setObjectType(int objectType) {
         ObjectType = objectType;
     }
@@ -127,5 +122,18 @@ public abstract class FlyingObjectBase
      */
     final public int getObjectType() {
         return ObjectType;
+    }
+
+    public double getMx() {
+        return mx;
+    }
+    public double getMy() {
+        return my;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        // TODO Auto-generated method stub
+        return super.clone();
     }
 }

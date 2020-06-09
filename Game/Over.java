@@ -20,7 +20,7 @@ public class Over extends JPanel {
         JLabel bgLabel = new JLabel(background);      // 把背景圖顯示在Label中
 		bgLabel.setBounds(-15, -10, 500, 800);
 		
-		ImageIcon logo = new ImageIcon("gameover.jpg");
+		ImageIcon logo = new ImageIcon("gameover.png");
         JLabel lb = new JLabel(logo); //logo
 		lb.setBounds(13, -15, 450, 300);
 		
@@ -86,7 +86,7 @@ public class Over extends JPanel {
 	}
 	
 
-    void write(int k){
+    static void write(int k){
         try
 		{
 			// read file content from file
@@ -163,11 +163,11 @@ public class Over extends JPanel {
         }
     }
     public static void main(String[] args){
-        Over s=new Over();
+        //Over s=new Over();
        // s.showscore();
         JFrame frm = new JFrame();
 		frm.setSize(500,800);
-		frm.add(s);
+		//frm.add(s);
 		frm.setVisible(true);  // 顯示視窗
     }
 }

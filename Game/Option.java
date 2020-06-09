@@ -37,6 +37,7 @@ public class Option extends JPanel{
       rdb1.addActionListener(new ActionListener() {
          @Override
          public void actionPerformed(ActionEvent e) {
+            Game.flight.setFlightType(0);
             img=new ImageIcon("picture/1.png");
             Image image = img.getImage(); // transform it 
             Image newimg = image.getScaledInstance(300, 300,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way  
@@ -51,6 +52,7 @@ public class Option extends JPanel{
       rdb2.addActionListener(new ActionListener() {
          @Override
          public void actionPerformed(ActionEvent e) {
+            Game.flight.setFlightType(1);
             img=new ImageIcon("picture/2.png");
             Image image = img.getImage(); // transform it 
             Image newimg = image.getScaledInstance(300, 300,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way  
@@ -64,6 +66,7 @@ public class Option extends JPanel{
       rdb3.addActionListener(new ActionListener() {
          @Override
          public void actionPerformed(ActionEvent e) {
+            Game.flight.setFlightType(2);
             img=new ImageIcon("picture/3.png");
             Image image = img.getImage(); // transform it 
             Image newimg = image.getScaledInstance(300, 300,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way  
@@ -77,6 +80,7 @@ public class Option extends JPanel{
       rdb4.addActionListener(new ActionListener() {
          @Override
          public void actionPerformed(ActionEvent e) {
+            Game.flight.setFlightType(3);
             img=new ImageIcon("picture/4.png");
             Image image = img.getImage(); // transform it 
             Image newimg = image.getScaledInstance(300, 300,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way  
@@ -109,7 +113,8 @@ public class Option extends JPanel{
          }
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				Game.start();
+            Game.start();
+            Panelextend.card.show(Panelextend.container, "drawpane");
 			}
 			@Override
 			public void mouseExited(MouseEvent e) {
