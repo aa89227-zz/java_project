@@ -13,7 +13,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 
 public class Over extends JPanel {
-    private JTextArea textArea = new JTextArea();
+    static private JTextArea textArea = new JTextArea();
     public Over(){
         setLayout(null);
 		ImageIcon background = new ImageIcon("board.png");
@@ -103,6 +103,7 @@ public class Over extends JPanel {
 					if(text!=null)
 						sb.append(text + "\n");
 					sb.append(k + "\n");
+					System.out.println(k);
 				}
 				else{
 					if(text != null)
@@ -110,10 +111,17 @@ public class Over extends JPanel {
 				}
 				text = str;
 			}
-			sb.append(text + "\n");
+			if(Integer.parseInt(text) > k){
+				sb.append(text + "\n");
+				sb.append(k + "\n");
+			}
+			else{
+				sb.append(text + "\n");
+			}
+			
 			br.close();
 			reader.close();
-
+			//System.out.println(sb);
 			// write string to file
 			FileWriter writer = new FileWriter("score.txt");
 			BufferedWriter bw = new BufferedWriter(writer);
@@ -128,9 +136,10 @@ public class Over extends JPanel {
 		{
 			e.printStackTrace();
 		}
+		showscore();
 	}
 	
-    void showscore(){
+    static void showscore(){
         try
 		{
 			// read file content from file

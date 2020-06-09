@@ -31,6 +31,15 @@ public final class Bullet extends FlyingObjectBase implements Cloneable
         super.setHeight(height);
     }
 
+    Bullet(int noUse, double x, double y, double mx, double my, Image img, int attack, int width, int height){
+        super.setPosition(x, y);
+        super.setMx(mx);
+        super.setMy(my);
+        super.setImg(img);
+        super.setAttack(attack);
+        super.setWidth(width);
+        super.setHeight(height);
+    }
 
     Bullet(Bullet bullet){
         this.offx = bullet.getOffx();

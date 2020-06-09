@@ -40,7 +40,10 @@ public class Game {
     final private static int gH = 800; //screen height
     private static Toolkit toolkit = Toolkit.getDefaultToolkit();
     private static Image background = toolkit.getImage("background.jpg");
+    private static Image skillImage = toolkit.getImage("bullet/rocket.png");
     public static int round = 0;
+    private static boolean skill = false;
+    private static boolean exeSkill = false;
     private static JPanel drawPane = new JPanel(){
         @Override
         public void paintComponent(Graphics g) 
@@ -48,15 +51,7 @@ public class Game {
             super.paintComponent(g);
             //畫背景
             g.drawImage(background, 0, 0,gW, gH,null);
-            //血量
-            g.setColor(Color.RED); 
-            g.setFont(new Font(String.valueOf(flight.getHealth()),Font.BOLD, 30));
-            g.drawString("血量:"+String.valueOf(flight.getHealth()), 30, 30);
-            //分數
-            g.setFont(new Font(String.valueOf(score), Font.BOLD, 30));
-            g.drawString("分數:"+String.valueOf(score), gW - 180, 30);
-            
-        
+  
             //敵人戰機
             for (FlyingObjectBase flyingObjectBase : enemies) {
                 g.drawImage(flyingObjectBase.getImg(),(int)(flyingObjectBase.getPx() - flyingObjectBase.getWidth()/2),
@@ -77,7 +72,24 @@ public class Game {
                 g.drawImage(flyingObjectBase.getImg(),(int)(flyingObjectBase.getPx() - flyingObjectBase.getWidth()/2),
                 (int)(flyingObjectBase.getPy() - flyingObjectBase.getHeight()/2),
                 10,30,null);}
-            
+
+            g.setColor(Color.RED); 
+             //分數
+             g.setFont(new Font(String.valueOf(score), Font.BOLD, 30));
+             g.drawString("分數:"+String.valueOf(score), gW - 180, 30);
+
+            //血量
+            g.setFont(new Font(String.valueOf(flight.getHealth()),Font.BOLD, 30));
+            g.drawString("血量:"+String.valueOf(flight.getHealth()), 20, 30);
+
+            //技能
+            g.setColor(Color.YELLOW);
+            g.setFont(new Font(String.valueOf((double)(score % 1000) / 10),Font.BOLD, 30));
+            if(skill)
+                g.drawString("READY", 25, gH-50);
+            else
+                g.drawString(String.valueOf((double)(score % 1000) / 10)+"%", 25, gH-50);
+
         }        
     };
 
@@ -110,7 +122,29 @@ public class Game {
         Enemy.setInit();
         //frame.setSize(500, 800);
         drawPane.setPreferredSize(new Dimension(gW, gH));//設定panel大小
+        //-------------------------------add
+        frm.addKeyListener(new KeyListener() {
 
+            @Override
+            public void keyTyped(KeyEvent e) {}
+
+            @Override
+            public void keyReleased(KeyEvent e) {}
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == ' '){
+                    if (skill){
+                        exeSkill = true;
+                        skill = false;
+                    }
+                }
+            }
+        });
+
+        frm.setFocusable(true);
+        frm.requestFocusInWindow();
+        //--------------------add finish
         Panelextend.container.add(drawPane, "drawpane");
         flight.setWidth(80);
         flight.setHeight(80);
@@ -140,7 +174,19 @@ public class Game {
                             }
                         }
                     }
-                    if (score > 500 * speed) speed += 1;
+                    if (exeSkill){
+                        for(int i = 0; i < gW / 30; ++i)
+                            flightBullets.add(new Bullet(0, i * 30, flight.getPy(), 0, -5, skillImage, 50, 30, 90));
+                        exeSkill = false;
+                    }
+                    
+                        
+                    if (score > 500 * speed){ 
+                        if (speed % 2 == 0)
+                            skill = true;
+                        speed += 1;
+                    }
+                    
                     //TODO:
                     //里程數到，釋放enemy
                     double rx = new Random().nextDouble() * gW;
@@ -164,7 +210,9 @@ public class Game {
                 px = e.getX();
                 py = e.getY();
             }
+            
         });
+        
     }
 
     public static void start()
@@ -194,8 +242,8 @@ public class Game {
         game_state = false;
         timer.stop();
         Over.write(score);
+        Score.showscore();
         Panelextend.card.show(Panelextend.container, "Over");
-       
     }
 
     /** 
