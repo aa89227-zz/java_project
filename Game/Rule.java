@@ -19,7 +19,7 @@ public class Rule extends JPanel {
 		lb.setBounds(13, -15, 450, 300);
 		
 
-		textArea.setBounds(100, 250, 400, 350);
+		textArea.setBounds(35, 250, 400, 350);
 		textArea.setFont(new Font("標楷體", Font.PLAIN, 30));
 		textArea.setColumns(10);
 		textArea.setEditable(false);

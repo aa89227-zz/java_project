@@ -30,11 +30,9 @@ public class Game {
     private static Timer timer;
     private static boolean game_state = false; //true if game start
 
-    private static Point point; //滑鼠座標
     private static int px;
     private static int py;
     private static int score; //分數
-    private static int distance; //里程數
     private static int speed = 1; //遊戲速度
     final private static int gW = 500; //screen width
     final private static int gH = 800; //screen height
@@ -76,11 +74,11 @@ public class Game {
             g.setColor(Color.RED); 
              //分數
              g.setFont(new Font(String.valueOf(score), Font.BOLD, 30));
-             g.drawString("分數:"+String.valueOf(score), gW - 180, 30);
+             g.drawString("分數:"+String.valueOf(score), gW - 175, 30);
 
             //血量
             g.setFont(new Font(String.valueOf(flight.getHealth()),Font.BOLD, 30));
-            g.drawString("血量:"+String.valueOf(flight.getHealth()), 20, 30);
+            g.drawString("血量:"+String.valueOf(flight.getHealth()), 15, 30);
 
             //技能
             g.setColor(Color.YELLOW);
@@ -114,8 +112,68 @@ public class Game {
              System.out.println(error);
          }
      }
+     static void bang(){
+        try{
+            File musicPath = new File("bang.wav");
+                
+            if(musicPath.exists())
+            {
+                AudioInputStream audioInput = AudioSystem.getAudioInputStream(musicPath);
+                Clip clip = AudioSystem.getClip();
+                clip.open(audioInput);
+                clip.start();
+            }
+            else {
+                System.out.println("無法播放");
+            }
 
+        }catch(Exception error){
+            System.out.println("File Not Found");
+            System.out.println(error);
+        }
+     }
 
+     static void las(){
+        try{
+            File musicPath = new File("las.wav");
+                
+            if(musicPath.exists())
+            {
+                AudioInputStream audioInput = AudioSystem.getAudioInputStream(musicPath);
+                Clip clip = AudioSystem.getClip();
+                clip.open(audioInput);
+                clip.start();
+            }
+            else {
+                System.out.println("無法播放");
+            }
+
+        }catch(Exception error){
+            System.out.println("File Not Found");
+            System.out.println(error);
+        }
+     }
+
+     static void sk(){
+        try{
+            File musicPath = new File("skill.wav");
+                
+            if(musicPath.exists())
+            {
+                AudioInputStream audioInput = AudioSystem.getAudioInputStream(musicPath);
+                Clip clip = AudioSystem.getClip();
+                clip.open(audioInput);
+                clip.start();
+            }
+            else {
+                System.out.println("無法播放");
+            }
+
+        }catch(Exception error){
+            System.out.println("File Not Found");
+            System.out.println(error);
+        }
+     }
     public static void main(String[] args)
     {
         frm.setVisible(true);
@@ -157,16 +215,16 @@ public class Game {
                     checkDamage();
                     removeLowerHealth();
                     removeOuter();
-                    ++distance;
                     ++score;
                     flight.setPosition(px, py);
                     flight.resetBullet();
                     for (Enemy enemy : enemies) {
                         enemy.resetBullet();
                     }
-                    if ((++round) % 10 == 0)
+                    if ((++round) % 10 == 0){
+                        las();
                         flightBullets.addAll(flight.getBullet());
-                    
+                    }
                     if ((new Random().nextInt(10)) == 0){
                         for (Enemy enemy : enemies) {
                             if ((new Random().nextInt(3)) == 0){
@@ -177,6 +235,7 @@ public class Game {
                     if (exeSkill){
                         for(int i = 0; i < gW / 30; ++i)
                             flightBullets.add(new Bullet(0, i * 30, flight.getPy(), 0, -5, skillImage, 50, 30, 90));
+                            sk();
                         exeSkill = false;
                     }
                     
@@ -188,7 +247,6 @@ public class Game {
                     }
                     
                     //TODO:
-                    //里程數到，釋放enemy
                     double rx = new Random().nextDouble() * gW;
                     int rt = new Random().nextInt(6);
                     if ((new Random().nextInt(20)) == 0){
@@ -201,8 +259,6 @@ public class Game {
                 }
             });
         timer.setInitialDelay(0);
-        //frame.setVisible(true);
-        //frame.setResizable(false);
         music();
         drawPane.addMouseMotionListener(new MouseMotionListener(){
             public void mouseDragged(MouseEvent e){}
@@ -218,11 +274,11 @@ public class Game {
     public static void start()
     {
         score = 0;
-        distance = 0;
         flight.setHealth(300);
         flightBullets.clear();
         enemyBullets.clear();
         enemies.clear();
+        skill = false;
         game_state = true;
         speed = 1;
         timer.start();
@@ -314,6 +370,7 @@ public class Game {
             if (isIn){
                 enemy.addHealth(-(flight.getAttack()));
                 flight.addHealth(-(enemy.getAttack()));
+                bang();
             }
         }
         for (FlyingObjectBase bullet : enemyBullets) {
@@ -323,6 +380,7 @@ public class Game {
             else if (bullet.getPy() > flight.getPy() + flight.getHeight()/2) continue;
             bullet.addHealth(-(flight.getAttack()));
             flight.addHealth(-(bullet.getAttack()));
+            bang();
         }
     }
 

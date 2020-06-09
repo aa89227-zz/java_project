@@ -103,7 +103,7 @@ public class Over extends JPanel {
 					if(text!=null)
 						sb.append(text + "\n");
 					sb.append(k + "\n");
-					System.out.println(k);
+					//System.out.println(k);
 				}
 				else{
 					if(text != null)
