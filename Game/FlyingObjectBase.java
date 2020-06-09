@@ -1,5 +1,6 @@
 package Game;
-
+import javax.swing.ImageIcon;//圖片
+import java.awt.*;
 public abstract class FlyingObjectBase 
 {
     private int health = 0; // health of object
@@ -15,6 +16,10 @@ public abstract class FlyingObjectBase
 
     private int ObjectType = 0;
 
+    private int point = 0;
+
+    private Image img;
+
     FlyingObjectBase()
     {
         health = 0;
@@ -25,10 +30,7 @@ public abstract class FlyingObjectBase
         mx = 0;
         my = 0;
     }
-    /**
-     * 
-     * @param height
-     */
+    
     public void setHeight(int height) {
         this.height = height;
     }
@@ -43,6 +45,10 @@ public abstract class FlyingObjectBase
     }
     public void setHealth(int Health){
         health = Health;
+    }
+
+    public void setPoint(int point) {
+        this.point = point;
     }
 
     public void addHealth(int off){
@@ -81,6 +87,10 @@ public abstract class FlyingObjectBase
         ObjectType = objectType;
     }
 
+    public void setImg(Image img) {
+        this.img = img;
+    }
+
     final public int getHealth() {
         return health;
     }
@@ -97,8 +107,23 @@ public abstract class FlyingObjectBase
         return attack;
     }
 
+    public int getPoint() {
+        return point;
+    }
+
+    public Image getImg() {
+        return img;
+    }
+    public int getHeight() {
+        return height;
+    }
+    public int getWidth() {
+        return width;
+    }
     /**
-     * 
+     * ObjectType : <p>
+     * 1:bullet<p>
+     * 2:enemy<p>
      * @return <code>ObjectType</code>
      */
     final public int getObjectType() {

@@ -1,30 +1,40 @@
 package Game;
-//TODO:
-//為class.draw()定位frame
 import javax.swing.*;
 import java.lang.Thread;
+import java.sql.Time;
 import java.awt.Color;
 import java.awt.event.*;
 import java.awt.*;
 import javax.swing.ImageIcon;//圖片
+
+
 import javax.sound.sampled.AudioInputStream;//音樂
 import java.io.*;
 import javax.sound.sampled.*;//音樂
 import java.util.ArrayList;
-import java.util.concurrent.Semaphore;
+import java.awt.Graphics;
 
 public class Game {
     private static JFrame frame = new JFrame("雷霆戰機");
-    private static JPanel pn_mainMenu = new JPanel();
-    private static MoveFlight moveFlight = new MoveFlight();
+    private static Panelextend frm = new Panelextend();
+    private static JPanel drawPane = new JPanel();//draw使用
+    private static Graphics g = drawPane.getGraphics();//draw使用
+    private static MoveFlight moveFlight = new MoveFlight(); // thread of detect mouse position
+
     private static Flight flight = new Flight();
-    private static ArrayList<FlyingObjectBase> listOfObj = new ArrayList<FlyingObjectBase>();
-    private static boolean game_state = false;
-    private static Point point;
-    private static int score;
-    private static int distance;
-    private static Timmer timmer = new Timmer();
-    private static Semaphore mutex = new Semaphore(1);
+    private static ArrayList<Bullet> flightBullets = new ArrayList<Bullet>(); 
+    private static ArrayList<Enemy> enemies = new ArrayList<Enemy>(); 
+    private static ArrayList<Bullet> enemyBullets = new ArrayList<Bullet>(); 
+
+    private static Timer timer;
+    private static boolean game_state = false; //true if game start
+
+    private static Point point; //滑鼠座標
+    private static int score; //分數
+    private static int distance; //里程數
+    private static int speed = 1; //遊戲速度
+    final private static int gW = 500; //screen width
+    final private static int gH = 800; //screen height
     static void music(){     	
         try{
              File musicPath = new File("bgm.wav");
@@ -50,68 +60,39 @@ public class Game {
 
     public static void main(String[] args)
     {
-        frame.setSize(500, 800);
-        pn_mainMenu.setLayout(null);
-        ImageIcon background = new ImageIcon("board.png");
-        JLabel bgLabel = new JLabel(background);      // 把背景圖顯示在Label中
-        bgLabel.setBounds(-15, -10, 500, 800);
-        ImageIcon logo = new ImageIcon("logo.png");
-        JLabel lb = new JLabel(logo);
-        lb.setBounds(13, 75, 450, 300);
-        JButton bt_start = new JButton("開始遊戲");
-        bt_start.setForeground(Color.white);
-        bt_start.setBackground(Color.BLACK);
-        bt_start.setFont(new Font("微軟正黑體", Font.BOLD | Font.ITALIC, 28));
-        bt_start.setBounds(177, 396, 146, 48);
+        frm.setVisible(true);
 
-        JButton bt_option = new JButton("選項");
-        bt_option.setForeground(Color.white);
-        bt_option.setBackground(Color.BLACK);
-        bt_option.setFont(new Font("微軟正黑體", Font.BOLD | Font.ITALIC, 28));
-        bt_option.setBounds(177, 458, 146, 48);
-        
-        JButton bt_exit = new JButton("結束遊戲");
-        bt_exit.setForeground(Color.white);
-        bt_exit.setBackground(Color.BLACK);
-        bt_exit.setFont(new Font("微軟正黑體", Font.BOLD | Font.ITALIC, 28));
-        bt_exit.setBounds(177, 520, 146, 48);
+        //frame.setSize(500, 800);
+        drawPane.setPreferredSize(new Dimension(gW, gH));//設定panel大小
 
-        bt_start.addActionListener(
-            new ActionListener(){
-                public void actionPerformed(ActionEvent e){start();}
-                }
-            );
-        bt_option.addActionListener(
-            new ActionListener(){
-                public void actionPerformed(ActionEvent e){}
-                }
-            );
-        bt_exit.addActionListener(
-            new ActionListener(){
-                public void actionPerformed(ActionEvent e){System.exit(0);}
-                }
-            );
-           
-        pn_mainMenu.add(lb);
-        pn_mainMenu.add(bgLabel);
-        pn_mainMenu.add(bt_start, BorderLayout.CENTER);
-        pn_mainMenu.add(bt_option, BorderLayout.CENTER);
-        pn_mainMenu.add(bt_exit, BorderLayout.CENTER);
+        Panelextend.container.add(drawPane, "drawpane");
 
-        //pn_mainMenu.setLayer(lb, 3);
-        //pn_mainMenu.setLayer(bgLabel, 2);
-        //pn_mainMenu.setLayer(bt_start, 1);
-        //pn_mainMenu.setLayer(bt_option, 1);
-        //pn_mainMenu.setLayer(bt_exit, 1);
-        frame.add(pn_mainMenu);
-        frame.repaint();
-        frame.addWindowListener(new WindowAdapter() 
-        {
-            public void windowClosing(WindowEvent event) {
-            System.exit(0);}}
-            );
-        frame.setVisible(true);
-        frame.setResizable(false);
+        /**
+         * timer
+         */
+        timer = new Timer(30,
+            new ActionListener(){
+                public void actionPerformed(ActionEvent e){
+                    checkDamage();
+                    removeLowerHealth();
+                    removeOuter();
+                    ++distance;
+                    ++score;
+                    flightBullets.addAll(flight.getBullet());
+                    for (Enemy enemy : enemies) {
+                        enemyBullets.addAll(enemy.getBullet());
+                    }
+                    //TODO:
+                    //里程數到，釋放enemy
+                    moveUnit();
+                    draw();
+                    if (flight.getHealth() < 0)
+                        gameover();
+                }
+            });
+        timer.setInitialDelay(0);
+        //frame.setVisible(true);
+        //frame.setResizable(false);
         music();
         
         moveFlight.start();
@@ -119,26 +100,14 @@ public class Game {
 
     private static void start()
     {
-        //TODO:
-        // - sleep 幾秒，顯示起始畫面
-        // - game_state 設為 true
-        // - 啟動 thread
-        //      * 跑計時器(計算路程)
-        //      * 讀取計時器，到一定的路程會召喚 enemy
-        //      * 計算是否戰機有受到傷害
-        //   x   * MoveFlight
         score = 0;
         distance = 0;
         game_state = true;
+        timer.start();
         return;
     }
 
-    private static void option()
-    {
-
-    }
-
-    private void gameover()
+    private static void gameover()
     {
         //TODO:
         // - game_state 設為 false
@@ -148,12 +117,55 @@ public class Game {
         //      * 按鈕 => 回到標題畫面
         // - 停止計時器
         game_state = false;
-
+        timer.stop();
     }
+
+    /** 
+     * 畫背景
+     * 畫子彈(enemyBullets, flightBullets)
+     * 畫戰機(flight)
+     * 畫敵人(enemies)
+     */
+    private static void draw(){
+        //TODO:
+        //draw on drawpane
+        //參數 drawImage(圖片,x座標,y座標,寬,高,null)
+
+        //玩家戰機 
+        g.drawImage(flight.getImg(),(int)flight.getPx(),(int)flight.getPy(),20,35,null);
+        
+        //敵人戰機
+        for (FlyingObjectBase flyingObjectBase : enemies) {
+            g.drawImage(flyingObjectBase.getImg(),(int)flyingObjectBase.getPx(),
+                        (int)flyingObjectBase.getPy(),20,35,null);}
+
+        //玩家子彈
+        for (FlyingObjectBase flyingObjectBase : flightBullets) {
+            g.drawImage(flyingObjectBase.getImg(),(int)flyingObjectBase.getPx(),
+                        (int)flyingObjectBase.getPy(),20,35,null);}
+
+        //敵人子彈
+        for (FlyingObjectBase flyingObjectBase : enemyBullets) {
+            g.drawImage(flyingObjectBase.getImg(),(int)flyingObjectBase.getPx(),
+                        (int)flyingObjectBase.getPy(),20,35,null);}
+        //寫完但不確定
+    }
+    
     /**
-     * <code>thread</code>，滑鼠移動時會重繪戰機
-     * <p>
-     * 當 <code>game_state == true</code> ，也就是遊戲開始時會執行
+     * 檢查是否超出邊界
+     * @param flyingObject
+     * @return <code>true</code> if <code>flyingObject</code> out of border
+     */
+    private static boolean isOutOfBorder(FlyingObjectBase flyingObject){
+        if (flyingObject.getPx() + flyingObject.getWidth() > 0) return false;
+        else if (flyingObject.getPx() - flyingObject.getWidth() < gW) return false;
+        else if (flyingObject.getPy() + flyingObject.getHeight() > 0) return false;
+        else if (flyingObject.getPy() - flyingObject.getHeight() < gH) return false;
+        return true;
+    } 
+    
+    /**
+     * 得到滑鼠座標
      */
     private static class MoveFlight extends Thread {
         
@@ -167,69 +179,106 @@ public class Game {
             if (game_state){
                 point = frame.getLocation();
                 flight.setPosition(point.getX(), point.getY());
-                flight.draw();
             }
         }
+    }
+    
+    /**
+     * 把碰撞到的扣掉生命值
+     */
+    private static void checkDamage(){
+        for (FlyingObjectBase enemy : enemies) {
+            for (FlyingObjectBase bullet : flightBullets) {
+                if (bullet.getPx() < enemy.getPx() - enemy.getWidth()/2) continue;
+                else if (bullet.getPx() > enemy.getPx() + enemy.getWidth()/2) continue;
+                else if (bullet.getPy() < enemy.getPy() - enemy.getHeight()/2) continue;
+                else if (bullet.getPy() > enemy.getPy() + enemy.getHeight()/2) continue;
+                bullet.addHealth(-(enemy.getAttack()));
+                enemy.addHealth(-(bullet.getAttack()));
+            }
+            if ((enemy.getPx() - enemy.getWidth()/2 > flight.getPx() - flight.getWidth()/2 
+                && enemy.getPx() - enemy.getWidth()/2 < flight.getPx() + flight.getWidth()/2
+                && enemy.getPy() - enemy.getHeight()/2 > flight.getPx() - flight.getWidth()/2
+                && enemy.getPy() - enemy.getHeight()/2 < flight.getPx() + flight.getWidth()/2)) continue;
+            else if ((enemy.getPx() + enemy.getWidth()/2 > flight.getPx() - flight.getWidth()/2 
+                && enemy.getPx() + enemy.getWidth()/2 < flight.getPx() + flight.getWidth()/2
+                && enemy.getPy() - enemy.getHeight()/2 > flight.getPx() - flight.getWidth()/2
+                && enemy.getPy() - enemy.getHeight()/2 < flight.getPx() + flight.getWidth()/2)) continue;
+            else if ((enemy.getPx() + enemy.getWidth()/2 > flight.getPx() - flight.getWidth()/2 
+                && enemy.getPx() + enemy.getWidth()/2 < flight.getPx() + flight.getWidth()/2
+                && enemy.getPy() + enemy.getHeight()/2 > flight.getPx() - flight.getWidth()/2
+                && enemy.getPy() + enemy.getHeight()/2 < flight.getPx() + flight.getWidth()/2)) continue;
+            else if ((enemy.getPx() - enemy.getWidth()/2 > flight.getPx() - flight.getWidth()/2 
+                && enemy.getPx() - enemy.getWidth()/2 < flight.getPx() + flight.getWidth()/2
+                && enemy.getPy() + enemy.getHeight()/2 > flight.getPx() - flight.getWidth()/2
+                && enemy.getPy() + enemy.getHeight()/2 < flight.getPx() + flight.getWidth()/2)) continue;
+            enemy.addHealth(-(flight.getAttack()));
+            flight.addHealth(-(enemy.getAttack()));
+        }
+        for (FlyingObjectBase bullet : enemyBullets) {
+            if (bullet.getPx() < flight.getPx() - flight.getWidth()/2) continue;
+            else if (bullet.getPx() > flight.getPx() + flight.getWidth()/2) continue;
+            else if (bullet.getPy() < flight.getPy() - flight.getHeight()/2) continue;
+            else if (bullet.getPy() > flight.getPy() + flight.getHeight()/2) continue;
+            bullet.addHealth(-(flight.getAttack()));
+            flight.addHealth(-(bullet.getAttack()));
+        }
+    }
 
+    /**
+     * 把生命值低於0的移除
+     */
+    private static void removeLowerHealth(){
+        for (int i = 0; i < enemies.size(); i++) {
+            if (enemies.get(i).getHealth() < 0){
+                enemies.remove(i);
+                --i;
+                score += enemies.get(i).getPoint();
+            }
+        }
+        for (int i = 0; i < flightBullets.size(); i++) {
+            if (flightBullets.get(i).getHealth() < 0){
+                flightBullets.remove(i);
+                --i;
+            }
+        }
+        for (int i = 0; i < enemyBullets.size(); i++) {
+            if (enemyBullets.get(i).getHealth() < 0){
+                enemyBullets.remove(i);
+                --i;
+            }
+        }
     }
     /**
-     * <code>thread</code>，計算路程
-     * <p>
-     * 當 <code>game_state == true</code> ，也就是遊戲開始時會執行
-     * <p>
-     * <code>distance</code> 及 <code>score</code> 都會往上加
-     * <p>
-     * 使用critical section
+     * 把超出邊界的移除
      */
-    private static class Timmer extends Thread{
-        Timmer(){
-
-        }
-
-        @Override
-        public void run(){
-            if (game_state){
-                try {
-                    mutex.acquire();
-                    score+=1;
-                    distance+=1;
-                    mutex.release();
-                } catch (InterruptedException e) {
-                    //TODO: handle exception
-                }
+    private static void removeOuter(){
+        for (int i = 0; i < enemies.size(); i++) {
+            if (isOutOfBorder(enemies.get(i))){
+                enemies.remove(i);
             }
-        } 
-    }
-    /**
-     * <code>thread</code>，計算是否要清除
-     * <p>
-     * 當 <code>game_state == true</code> ，也就是遊戲開始時會執行
-     * <p> 
-     * 四種情況:<p>
-     * (1)超出邊界，直接清除。<p>
-     * (2)敵人血量為小餘0，清除，並加分。<p>
-     * (3)戰機血量小餘0，清除，結束遊戲。<p>
-     * (4)子彈，不論是何方的子彈，血量小餘0，清除，不加分<p>
-     */
-    private static class DealDamage extends Thread{
-        DealDamage(){
-
         }
-
-        @Override
-        public void run(){
-            if (game_state){
-                /*
-                try{
-                    for (FlyingObjectBase flyingObject : listOfObj) {
-                        
-                    }
-                }
-                catch (InterruptedException e){
-
-                }
-                */
+        for (int i = 0; i < enemyBullets.size(); i++) {
+            if (isOutOfBorder(enemyBullets.get(i))){
+                enemyBullets.remove(i);
             }
+        }
+        for (int i = 0; i < flightBullets.size(); i++) {
+            if (isOutOfBorder(flightBullets.get(i))){
+                flightBullets.remove(i);
+            }
+        }
+    } 
+
+    private static void moveUnit(){
+        for (FlyingObjectBase enemy : enemies) {
+            enemy.moveUnit(1);
+        }
+        for (FlyingObjectBase bullet : enemyBullets) {
+            bullet.moveUnit(1);
+        }
+        for (FlyingObjectBase bullet : flightBullets) {
+            bullet.moveUnit(1);
         }
     }
 }
