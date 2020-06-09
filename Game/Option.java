@@ -105,10 +105,11 @@ public class Option extends JPanel{
 			}
 			@Override
 			public void mouseClicked(MouseEvent e) {
-			}
+            
+         }
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				
+				Game.start();
 			}
 			@Override
 			public void mouseExited(MouseEvent e) {

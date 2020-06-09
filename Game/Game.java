@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.awt.Graphics;
 
 public class Game {
-    private static JFrame frame = new JFrame("雷霆戰機");
+    //private static JFrame frame = new JFrame("雷霆戰機");
     private static Panelextend frm = new Panelextend();
     private static JPanel drawPane = new JPanel();//draw使用
     private static Graphics g = drawPane.getGraphics();//draw使用
@@ -30,6 +30,8 @@ public class Game {
     private static boolean game_state = false; //true if game start
 
     private static Point point; //滑鼠座標
+    private static int px;
+    private static int py;
     private static int score; //分數
     private static int distance; //里程數
     private static int speed = 1; //遊戲速度
@@ -78,6 +80,8 @@ public class Game {
                     removeOuter();
                     ++distance;
                     ++score;
+                    flight.setPosition(px, py);
+                    flight.resetBullet();
                     flightBullets.addAll(flight.getBullet());
                     for (Enemy enemy : enemies) {
                         enemyBullets.addAll(enemy.getBullet());
@@ -98,12 +102,13 @@ public class Game {
         moveFlight.start();
     }
 
-    private static void start()
+    public static void start()
     {
         score = 0;
         distance = 0;
         game_state = true;
         timer.start();
+        
         return;
     }
 
@@ -142,12 +147,12 @@ public class Game {
         //玩家子彈
         for (FlyingObjectBase flyingObjectBase : flightBullets) {
             g.drawImage(flyingObjectBase.getImg(),(int)flyingObjectBase.getPx(),
-                        (int)flyingObjectBase.getPy(),20,35,null);}
+                        (int)flyingObjectBase.getPy(),10,30,null);}
 
         //敵人子彈
         for (FlyingObjectBase flyingObjectBase : enemyBullets) {
             g.drawImage(flyingObjectBase.getImg(),(int)flyingObjectBase.getPx(),
-                        (int)flyingObjectBase.getPy(),20,35,null);}
+                        (int)flyingObjectBase.getPy(),10,30,null);}
         //寫完但不確定
     }
     
@@ -177,8 +182,9 @@ public class Game {
         @Override
         public void run() {
             if (game_state){
-                point = frame.getLocation();
-                flight.setPosition(point.getX(), point.getY());
+                point = drawPane.getLocation();
+                px = (int)point.getX();
+                py = (int)point.getY();
             }
         }
     }

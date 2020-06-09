@@ -1,5 +1,4 @@
 package Game;
-import javax.swing.ImageIcon;//圖片
 import java.awt.*;
 public abstract class FlyingObjectBase 
 {

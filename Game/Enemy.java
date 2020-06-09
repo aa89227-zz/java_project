@@ -1,7 +1,6 @@
 package Game;
 
 import java.util.ArrayList;
-import javax.swing.ImageIcon;//圖片
 import java.awt.*;
 import java.awt.Toolkit;
 public class Enemy extends FlyingObjectBase
@@ -33,6 +32,9 @@ public class Enemy extends FlyingObjectBase
         img4 = toolkit.getImage("enemy/Puting.png");
         img5 = toolkit.getImage("enemy/Trump.png");
         img6 = toolkit.getImage("enemy/Xi.png");
+        bullet.add(new Bullet(-5, 3, 0, 5, img1));
+        bullet.add(new Bullet(5, 3, 0, 5, img2));
+        //bullets.add(bullet);
     }
     public ArrayList<Bullet> getBullet(){
         return bullet;
